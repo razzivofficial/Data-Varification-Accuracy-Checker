@@ -15,29 +15,41 @@ function checkData() {
   }
 
   // Calculate the expected frequencies based on Benford's Law
-  let expected = [0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046];
+  let expected = [
+    0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046,
+  ].map((x) => x * numbers.length);
 
   // Calculate the accuracy for each digit
   let digitAccuracy = [];
   for (let i = 0; i < counts.length; i++) {
     let digit = i + 1;
-    let expectedCount = expected[i] * numbers.length;
+    let expectedCount = expected[i];
     let actualCount = counts[i];
     let deviation = actualCount - expectedCount;
     let accuracy =
       (Math.log10(1 + 1 / digit) * Math.abs(deviation)) / expectedCount;
     digitAccuracy.push({
       digit: digit,
-      expected: (expectedCount * 100).toFixed(2) + "%",
-      actual: (actualCount * 100 / numbers.length).toFixed(2) + "%",
+      expected: ((expectedCount * 100) / numbers.length).toFixed(2) + "%",
+      actual: ((actualCount * 100) / numbers.length).toFixed(2) + "%",
       accuracy: (accuracy * 100).toFixed(2) + "%",
     });
   }
 
   // Create the table
-  let table = "<table><tr><th>Digit</th><th>Expected</th><th>Actual</th><th>Accuracy</th></tr>";
+  let table =
+    "<table><tr><th>Digit</th><th>Expected</th><th>Actual</th><th>Accuracy</th></tr>";
   for (let i = 0; i < digitAccuracy.length; i++) {
-    table += "<tr><td>" + digitAccuracy[i].digit + "</td><td>" + digitAccuracy[i].expected + "</td><td>" + digitAccuracy[i].actual + "</td><td>" + digitAccuracy[i].accuracy + "</td></tr>";
+    table +=
+      "<tr><td>" +
+      digitAccuracy[i].digit +
+      "</td><td>" +
+      digitAccuracy[i].expected +
+      "</td><td>" +
+      digitAccuracy[i].actual +
+      "</td><td>" +
+      digitAccuracy[i].accuracy +
+      "</td></tr>";
   }
   table += "</table>";
 
@@ -45,10 +57,10 @@ function checkData() {
   let chart = c3.generate({
     bindto: "#chart",
     data: {
-      type: 'bar', // Add this line
+      type: "bar", // Add this line
       columns: [
-        ["Actual"].concat(counts),
-        ["Expected"].concat(expected.map((x) => x * numbers.length)),
+        ["Actual"].concat(counts.map((x) => (x / numbers.length) * 100)),
+        ["Expected"].concat(expected.map((x) => (x / numbers.length) * 100)),
       ],
     },
     axis: {
@@ -63,16 +75,17 @@ function checkData() {
   let score = 0;
   for (let i = 0; i < counts.length; i++) {
     let digit = i + 1;
-    let expectedCount = expected[i] * numbers.length;
+    let expectedCount = expected[i];
     let actualCount = counts[i];
     let deviation = actualCount - expectedCount;
     let accuracy =
       (Math.log10(1 + 1 / digit) * Math.abs(deviation)) / expectedCount;
     score += accuracy;
   }
-  score = 100 - (score * 100) / 9;
+  let overallAccuracy = ((score / 9) * 100).toFixed(2) + "%";
 
   // Display the table and overall accuracy score
-  let output = document.getElementById("output");
-  output.innerHTML = table + "<p>Overall accuracy score: " + score.toFixed(2) + "%</p>";
-  }
+  document.getElementById("results").innerHTML = table;
+  document.getElementById("accuracy").innerHTML =
+    "Overall Accuracy: " + overallAccuracy;
+}
