@@ -85,7 +85,7 @@ function checkData() {
   let overallAccuracy = ((score / 9) * 100).toFixed(2) + "%";
 
   // Display the table and overall accuracy score
-  document.getElementById("results").innerHTML = table;
-  document.getElementById("accuracy").innerHTML =
-    "Overall Accuracy: " + overallAccuracy;
+  document.getElementById("output").innerHTML = table;
+  document.getElementById("percent").innerHTML =
+      "Overall Accuracy: " + overallAccuracy;  
 }
